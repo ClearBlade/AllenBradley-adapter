@@ -18,7 +18,7 @@ This script was tested on a Teltonika RUT11X modem running OpenWRT connected via
 
 5. A collection on the platform with the list of plc tags to be read that can be edited over time (the script uses the column "name" to reference the tags)
 
-6. A completed adapter_settings row in the adapter_config collection on the platform
+6. A completed adapter_settings row in the adapter_config collection on the platform named after the device
 
 # Script Requirements
 
