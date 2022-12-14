@@ -58,6 +58,6 @@ This script was tested on a Teltonika RUT11X modem running OpenWRT connected via
       "allen_bradley_type": "SLCDriver" # the type of device
    }
    ```
-3. That's it, the script will use the SDK to query the tag list from the collection and the tag values will be published to the mqtt topic named in the settings file to the platform, here is where you would create a normalizer code service on the platform to listen to that topic and to attribute the tag values to display in a meaningful manner
+3. That's it, the script will use the SDK to query the tag list from the collection and the tag values will be published to the mqtt topic named in the settings file on the platform, here is where you would create a normalizer code service on the platform to listen to that topic and to attribute the tag values to display in a meaningful manner
 
    
