@@ -14,9 +14,9 @@ This script was tested on a Teltonika RUT11X modem running OpenWRT connected via
 3. Use pip to install the ClearBlade python SDK in order to interact with the platform 
     - The ClearBlade python SDK and its documentation can be found here [ClearBlade Python SDK](https://github.com/ClearBlade/ClearBlade-Python-SDK)
 
-4. The creation of a device on the platform defined with the service account parameter to create an authorization key
+4. The creation of a device on the platform defined with the service account parameter selected to create an authorization key
 
-5. A collection on the platform with the list of plc tags to be read that can be edited over time
+5. A collection on the platform with the list of plc tags to be read that can be edited over time (the script uses the column "name" to reference the tags)
 
 6. A completed adapter_settings row in the adapter_config collection on the platform
 
