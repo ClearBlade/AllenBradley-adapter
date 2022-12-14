@@ -32,17 +32,17 @@ This script was tested on a Teltonika RUT11X modem running OpenWRT connected via
     ```
 2. Once a successful connection is made the script will query the 'adapter_config' collection for the device requirements, the requirements should be stored in the adapter_settings column and the adapter_name in the table should equal the device name, the settings contains
     
-    - **"endpoint_ip"**  which is the ip address of the plc
+    - **"endpoint_ip"**             which is the ip address of the plc
     
-    - **"msg_port"**  that will be used for the mqtt messages
+    - **"msg_port"**                that will be used for the mqtt messages
     
-    - **"interval"**  which is used to set the delay between each read
+    - **"interval"**                which is used to set the delay between each read
     
-    - **"tag_collection_name"**  which is referenced above as basic requirement #5
+    - **"tag_collection_name"**     which is referenced above as basic requirement #5
     
-    - **"msg_topic"**  that the list of tag values will be published to on the platform
+    - **"msg_topic"**               that the list of tag values will be published to on the platform
     
-    - **"allen_bradley_type"**  which is the type of plc driver to load
+    - **"allen_bradley_type"**      which is the type of plc driver to load
     
       - For SLC500 and Micrologix devices use SLCDriver, for all ControlLogix, CompactLogix and Micro800 plcs use the LogixDriver
    
