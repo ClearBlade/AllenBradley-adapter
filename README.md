@@ -51,11 +51,11 @@ This script was tested on a Teltonika RUT11X modem running OpenWRT connected via
    ```
    {
       "endpoint_ip": "192.168.1.50",
-      "msg_port": 1884, # the mqtt msg port
-      "interval": 60, # the interval to post the messages in seconds
-      "tag_collection_name": "plc_tag_descriptions", # the collection referenced above with the list of tags
-      "msg_topic": "cip/micrologix/1100/someTopic", # the mqtt message topic to publish to on the platforms
-      "allen_bradley_type": "SLCDriver" # the type of device
+      "msg_port": 1884, 
+      "interval": 60, 
+      "tag_collection_name": "plc_tag_descriptions", 
+      "msg_topic": "cip/micrologix/1100/someTopic", 
+      "allen_bradley_type": "SLCDriver" 
    }
    ```
 3. That's it, the script will use the SDK to query the tag list from the collection and the tag values will be published to the mqtt topic named in the settings file on the platform, here is where you would create a normalizer code service on the platform to listen to that topic and to attribute the tag values to display in a meaningful manner
