@@ -16,7 +16,7 @@ This script was tested on a Teltonika RUT11X modem running OpenWRT connected via
 
 4. The creation of a device on the platform defined with the service account parameter to create an authorization key
 
-5. A collection on the platform with the list of plc tags to be read that can be edited and re-deployed
+5. A collection on the platform with the list of plc tags to be read that can be edited over time
 
 6. A completed adapter_settings row in the adapter_config collection on the platform
 
