@@ -1,7 +1,7 @@
 # AllenBradley-adapter
 Python adapter script for reading tags from Allen Bradley PLCs
 
-This script was tested on a Teltonika RUT11X modem running OpenWRT connected via ethernet to an Allen Bradley Micrologic1100 PLC
+This script was tested on a Teltonika RUT11X modem running OpenWRT connected via ethernet to an Allen Bradley Micrologix1100 PLC
 
 # Basic Requirements
 
