@@ -36,7 +36,7 @@ This script was tested on a Teltonika RUT11X modem running OpenWRT connected via
     
     - **"msg_port"**                that will be used for the mqtt messages
     
-    - **"interval"**                which is used to set the delay between each read
+    - **"interval"**                which is used to set the delay between each read in seconds
     
     - **"tag_collection_name"**     which is referenced above as basic requirement #5
     
