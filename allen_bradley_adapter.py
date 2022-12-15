@@ -1,8 +1,8 @@
 from pycomm3 import SLCDriver, LogixDriver
 from clearblade.ClearBladeCore import System, Query
-import json, sys, time
+import json, sys, time, requests
 
-# a python script utilizing pycomm3 to read tags from Allen Bradley Micrologix and ControlLogix PLCs to ClearBlade plaform via MQTT
+# a python script to read tags from Allen Bradley Micrologix and ControlLogix PLCs to ClearBlade plaform via MQTT
 
 # nohup python adapter.py $ARGS > /dev/null 2>&1 
 
@@ -69,9 +69,13 @@ if plc.open():
             print("Unexpected disconnect from platform mqtt broker..")
             sys.exit()
 
+    def on_connect(client, userdata, flags, rc):
+        print("Platform connection succesful, beginning loop..")
+
+    mqtt.on_connect = on_connect 
     mqtt.on_disconnect = on_disconnect
     mqtt.connect()
-
+    
     # Iterate through collection rows reading tags and adding them to list
     while(True):
         
@@ -84,8 +88,8 @@ if plc.open():
 
         #convert python list of dicts to json for transport
         json_str = json.dumps(tag_list)
-        
-        #publish message to given mqtt topic on platform each interval
+              
+        #publish message to given mqtt topic on platform
         mqtt.publish(msg_topic, json_str)
         time.sleep(interval)  
 
