@@ -1,6 +1,6 @@
 from pycomm3 import SLCDriver, LogixDriver
 from clearblade.ClearBladeCore import System, Query
-import json, sys, time, requests, os, signal
+import json, sys, time, os, signal
 
 # a python script to read tags from Allen Bradley Micrologix and ControlLogix PLCs to ClearBlade plaform via MQTT
 
