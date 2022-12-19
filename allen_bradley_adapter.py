@@ -62,18 +62,24 @@ if plc.open():
     print("PLC connection successful..")
 
     # AB device driver connected, now connect to clearblade platform mqtt
-    mqtt = mySystem.Messaging(device, port=msg_port, use_tls=True)
+    mqtt = mySystem.Messaging(device, port=msg_port, keepalive=60, use_tls=True, client_id=DeviceName)    
 
-    def on_disconnect(client, userdata, rc):
-        if rc != 0:
-            print("Unexpected disconnect from platform mqtt broker..")
+    def on_connect(client, userdata, flags, rc):        
+        print("Platform connection successful, beginning loop..")
+
+    def on_disconnect(client, userdata, rc):        
+        sys.exit()
+    
+    def on_publish(mqttc, userdata, mid):
+        if not mid:
+            print("Message publish unsuccessful..")
             sys.exit()
+        else:
+            print("Message published, messageID: " + str(mid))
 
-    def on_connect(client, userdata, flags, rc):
-        print("Platform connection succesful, beginning loop..")
-
-    mqtt.on_connect = on_connect 
+    mqtt.on_connect = on_connect   
     mqtt.on_disconnect = on_disconnect
+    mqtt.on_publish = on_publish
     mqtt.connect()
     
     # Iterate through collection rows reading tags and adding them to list
