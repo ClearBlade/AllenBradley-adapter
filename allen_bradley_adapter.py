@@ -68,14 +68,10 @@ if plc.open():
         print("Platform connection successful, beginning loop..")
 
     def on_disconnect(client, userdata, rc):        
-        sys.exit()
+        os.kill(os.getpid(), signal.SIGINT)
     
-    def on_publish(mqttc, userdata, mid):
-        if not mid:
-            print("Message publish unsuccessful..")
-            sys.exit()
-        else:
-            print("Message published, messageID: " + str(mid))
+    def on_publish(mqttc, userdata, mid):        
+        print("Message published, messageID: " + str(mid))
 
     mqtt.on_connect = on_connect   
     mqtt.on_disconnect = on_disconnect
