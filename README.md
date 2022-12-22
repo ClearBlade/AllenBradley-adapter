@@ -23,7 +23,7 @@ This script was tested on a Teltonika RUT11X modem running OpenWRT connected via
 # Script Requirements
 
 1. The script accepts the platform authentication credentials via command line arguments (the name of the script is arg[0])
-    ```
+    ```python
     SystemKey = sys.argv[1]
     SystemSecret = sys.argv[2]
     SystemUrl = sys.argv[3]    
@@ -48,7 +48,7 @@ This script was tested on a Teltonika RUT11X modem running OpenWRT connected via
    
    An example adapter_settings usage is shown below:
    
-   ```
+   ```json
    {
       "endpoint_ip": "192.168.1.50",
       "msg_port": 1884, 
