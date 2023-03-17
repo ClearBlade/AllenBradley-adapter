@@ -98,22 +98,24 @@ except:
     print("Platform MQTT connection unreachable! check device connection settings..")
     sys.exit()
 
+retryInterval = 15
+faultLimit = 12
 faults = 0    
-while(faults < 12):
+while(faults < faultLimit):
     try:
         # attempt to open connection and read tags
         plc.open()
-        plc_read = plc.read(*tag_str)
+        plc_read = plc.read(*tag_str)        
+        plc.close()        
         print("PLC connection successful..")
-        plc.close()
 
     except:
         # allow a certain amount of and time between retries before bailing
         faults += 1
         print("PLC unreachable! check device connection settings.. " + str(faults) + " faults")
-        time.sleep(15)
+        time.sleep(retryInterval)
             
-    else:   
+    else:        
         #convert python list of dicts to json for transport       
         tag_list = []            
         for row in plc_read:            
@@ -131,10 +133,11 @@ while(faults < 12):
             if faults > 0: 
                 print("Faults reset to 0..") 
                 faults = 0
+            print("PLC wait loop.. " + str(interval) + " seconds")
             time.sleep(interval)
-
+            
         else:            
             mqtt.disconnect()      
             # something is wrong, bail and restart daemon
 
-os.kill(os.getpid(), signal.SIGINT)
+sys.exit()
