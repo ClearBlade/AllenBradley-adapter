@@ -1,10 +1,12 @@
 from pycomm3 import SLCDriver, LogixDriver
 from clearblade.ClearBladeCore import System, Query
 import json, sys, time, os, signal
+from datetime import datetime
 
 # a python script to read tags from Allen Bradley Micrologix and ControlLogix PLCs to ClearBlade local edge via MQTT
 
-# nohup $ARGS > /dev/null 2>&1
+
+# nohup python3 adapter.py SystemKey SystemSecret SystemUrl DeviceName DeviceKey > /dev/null 2>&1
 
 print("Initializing script: ", sys.argv[0])
 
@@ -48,6 +50,9 @@ try:
     tag_collection_name = adapter_config['tag_collection_name']
     msg_topic = adapter_config['msg_topic']
     allen_bradley_type = adapter_config['allen_bradley_type']
+    controls_topic = adapter_config['controls_topic']
+    controls_commands = controls_topic + '/command'
+    controls_feedback = controls_topic + '/feedback'
 
 except:
     print("Adapter configuration is required..must include 'endpoint_ip','msg_port','interval','tag_collection_name','msg_topic','allen_bradley_type'")
@@ -79,6 +84,7 @@ except:
 
 def on_connect(client, userdata, flags, rc):        
     print("Platform connection successful, beginning loop..")
+    client.subscribe(controls_commands)
 
 def on_disconnect(client, userdata, rc):            
     os.kill(os.getpid(), signal.SIGINT)
@@ -86,22 +92,47 @@ def on_disconnect(client, userdata, rc):
 def on_publish(mqttc, userdata, mid):        
     print("Message published, messageID: " + str(mid))
 
+def on_message(client, userdata, message):
+    command = json.loads(message.payload)
+    print ("Received message '" + str(command) + "' on topic '" + message.topic + "'")
+    writeTag(command)
+
 try:  
     # connect to CB mqtt messenging   
     mqtt = mySystem.Messaging(device, port=msg_port, keepalive=60, use_tls=False)   
     mqtt.on_connect = on_connect   
     mqtt.on_disconnect = on_disconnect
-    mqtt.on_publish = on_publish    
+    mqtt.on_publish = on_publish  
+    mqtt.on_message = on_message  
     mqtt.connect()
 
 except:
     print("Platform MQTT connection unreachable! check device connection settings..")
     sys.exit()
 
-retryInterval = 15
-faultLimit = 12
-faults = 0    
-while(faults < faultLimit):
+def writeTag(command):
+    feedback = {"user": command['user'], "id": command['id'], "ordered": command['ordered'], "command": command['command']}
+    try:
+        plc.open()
+        plc_write = plc.write((command['tag'], command['value']))
+        plc.close()
+
+    except:
+        print("PLC unreachable! check device connection settings..")
+        feedback['feedback'] = "Equipment Not Responding"
+        mqtt.publish(controls_feedback, json.dumps(feedback))
+
+    else:
+        print(str(plc_write[1]) + " written to tag: " + str(plc_write[0]))
+        if str(plc_write[3]) == 'None':
+            feedback['executed'] = time.gmtime()
+            feedback['feedback'] = "Command Successful - " + command['command']
+        else:
+            feedback['feedback'] = "Equipment Not Responding"
+        mqtt.publish(controls_feedback, json.dumps(feedback))
+        readTags()
+
+def readTags():
     try:
         # attempt to open connection and read tags
         plc.open()
@@ -110,12 +141,9 @@ while(faults < faultLimit):
         print("PLC connection successful..")
 
     except:
-        # allow a certain amount of and time between retries before bailing
-        faults += 1
-        print("PLC unreachable! check device connection settings.. " + str(faults) + " faults")
-        time.sleep(retryInterval)
-            
-    else:        
+        print("PLC unreachable! check device connection settings..")
+        
+    else:
         #convert python list of dicts to json for transport       
         tag_list = []            
         for row in plc_read:            
@@ -123,21 +151,10 @@ while(faults < faultLimit):
             tag_list.append(list_row)            
         
         json_str = json.dumps(tag_list)
-                
         #publish message to given mqtt topic on platform
-        msg = mqtt.publish(msg_topic, json_str)
-        msg.wait_for_publish()
+        mqtt.publish(msg_topic, json_str)
 
-        # allow counter to heal if msg gets published
-        if msg.is_published():            
-            if faults > 0: 
-                print("Faults reset to 0..") 
-                faults = 0
-            print("PLC wait loop.. " + str(interval) + " seconds")
-            time.sleep(interval)
-            
-        else:            
-            mqtt.disconnect()      
-            # something is wrong, bail and restart daemon
-
-sys.exit()
+   
+while(True):
+    readTags() 
+    time.sleep(interval)
