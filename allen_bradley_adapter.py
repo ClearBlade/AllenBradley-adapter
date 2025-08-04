@@ -17,8 +17,9 @@ try:
     DeviceName = sys.argv[4]
     DeviceKey =  sys.argv[5] 
     
-except: 
+except Exception as e:
     print("Not enough arguments..Script requires 1)SystemKey 2)SystemSecret 3)SystemUrl 4)DeviceName 5)DeviceKey..")
+    print(e)
     sys.exit()
 
 try:
@@ -26,8 +27,9 @@ try:
     mySystem = System(SystemKey, SystemSecret, SystemUrl)
     device = mySystem.Device(DeviceName, DeviceKey)
 
-except:
+except Exception as e:
     print("Unable to connect to platform..check configuration settings")
+    print(e)
     sys.exit()
 
 try:
@@ -38,8 +40,9 @@ try:
     adapter_configs = adapter_config_collection.getItems(q)
     adapter_settings = adapter_configs[0]['adapter_settings']
 
-except:
+except Exception as e:
     print("Unable to pull adapter_settings from platform..must be stored in adapter_config collection")
+    print(e)
     sys.exit()
 
 try:    
@@ -54,8 +57,9 @@ try:
     controls_commands = controls_topic + '/command'
     controls_feedback = controls_topic + '/feedback'
 
-except:
+except Exception as e:
     print("Adapter configuration is required..must include 'endpoint_ip','msg_port','interval','tag_collection_name','msg_topic','allen_bradley_type'")
+    print(e)
     sys.exit()
 
 try:
@@ -67,8 +71,9 @@ try:
         tag_str.append(row['name'])
     print('Script found ' + str(len(tag_str)) + ' tags..')
 
-except:   
+except Exception as e:
     print("Unable to pull tag list from platform..must be stored in a collection and named in adapter settings as 'tag_collection_name'")
+    print(e)
     sys.exit()
 
 try:
@@ -78,8 +83,9 @@ try:
     else:
         plc = LogixDriver(endpoint_ip)
 
-except:
+except Exception as e:
     print("Invalid plc IP address..must be stored in adapter settings as 'endpoint_ip'")
+    print(e)
     sys.exit()
 
 def on_connect(client, userdata, flags, rc):        
@@ -106,8 +112,9 @@ try:
     mqtt.on_message = on_message  
     mqtt.connect()
 
-except:
+except Exception as e:
     print("Platform MQTT connection unreachable! check device connection settings..")
+    print(e)
     sys.exit()
 
 def writeTag(command):
@@ -117,8 +124,9 @@ def writeTag(command):
         plc_write = plc.write((command['tag'], command['value']))
         plc.close()
 
-    except:
+    except Exception as e:
         print("PLC unreachable! check device connection settings..")
+        print(e)
         feedback['feedback'] = "Equipment Not Responding"
         mqtt.publish(controls_feedback, json.dumps(feedback))
 
@@ -140,8 +148,9 @@ def readTags():
         plc.close()        
         print("PLC connection successful..")
 
-    except:
+    except Exception as e:
         print("PLC unreachable! check device connection settings..")
+        print(e)
         
     else:
         #convert python list of dicts to json for transport       
